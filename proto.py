@@ -12,17 +12,13 @@ class Prompt:
         return json.dumps(self)
 
     @staticmethod
-    def objectHook(map:dict):
-        p = Prompt(map["Role"],map["Content"])
+    def UnmarshalWithDict(map:dict) -> "Prompt":
+        p = Prompt(map["role"],map["content"])
         return p
 
     @staticmethod
-    def UnmarshalWithDict(map:dict):
-        return Prompt.objectHook(map)
-
-    @staticmethod
-    def Unmarshal(v:str):
-        return json.loads(v,object_hook=Prompt.objectHook)
+    def Unmarshal(v:str) -> "Prompt":
+        return Prompt.UnmarshalWithDict(json.loads(v))
 
 class OpenAIRequest:
     messages:list[Prompt]
@@ -33,23 +29,20 @@ class OpenAIRequest:
     def Marshal(self) -> str:
         return json.dumps(self)
 
+
     @staticmethod
-    def objectHook(map:dict):
-        prompts:list[Prompt] = list()
-        messages:list = map["Messages"]
+    def UnmarshalWithDict(map:dict) -> "OpenAIRequest":
+        prompts:list[Prompt] = list[Prompt]()
+        messages:list = map["messages"]
         for promptMap in messages:
-            p = Prompt.UnmarshalWithDict(promptMap)
+            p:Prompt = Prompt.UnmarshalWithDict(promptMap)
             prompts.append(p)
-        req = OpenAIRequest(messages)
+        req = OpenAIRequest(prompts)
         return req
 
     @staticmethod
-    def UnmarshalWithDict(map:dict):
-        return OpenAIRequest.objectHook(map)
-
-    @staticmethod
-    def Unmarshal(v:str):
-        return json.loads(v,object_hook=OpenAIRequest.objectHook)
+    def Unmarshal(v:str) -> "OpenAIRequest":
+        return OpenAIRequest.UnmarshalWithDict(json.loads(v))
 
 class OpenAIChoice:
     index:int
@@ -69,8 +62,9 @@ class OpenAIChoice:
     def Marshal(self) -> str:
         return json.dumps(self)
 
+
     @staticmethod
-    def objectHook(map:dict):
+    def UnmarshalWithDict(map:dict) -> "OpenAIChoice":
         index:int = map["index"]
         messageMap:dict = map["message"]
         message:Prompt = Prompt.UnmarshalWithDict(messageMap)
@@ -78,12 +72,8 @@ class OpenAIChoice:
         return OpenAIChoice(index,message,finishReason)
 
     @staticmethod
-    def UnmarshalWithDict(map:dict):
-        return OpenAIChoice.objectHook(map)
-
-    @staticmethod
-    def Unmarshal(v:str):
-        return json.loads(v,object_hook=OpenAIChoice.objectHook)
+    def Unmarshal(v:str) -> "OpenAIChoice":
+        return OpenAIChoice.UnmarshalWithDict(json.loads(v))
 
 class OpenAIResponse:
     choices:list[OpenAIChoice]
@@ -97,7 +87,7 @@ class OpenAIResponse:
         return json.dumps(self)
 
     @staticmethod
-    def objectHook(map:dict):
+    def UnmarshalWithDict(map:dict) -> "OpenAIResponse":
         choices:list[OpenAIChoice] = list()
         for choiceMap in map["choices"]:
             choices.append(OpenAIChoice.UnmarshalWithDict(choiceMap))
@@ -107,9 +97,5 @@ class OpenAIResponse:
         return resp
 
     @staticmethod
-    def UnmarshalWithDict(map:dict):
-        return OpenAIResponse.objectHook(map)
-
-    @staticmethod
-    def Unmarshal(v:str):
-        return json.loads(v,object_hook=OpenAIResponse.objectHook)
+    def Unmarshal(v:str) -> "OpenAIResponse":
+        return OpenAIResponse.Unmarshal(json.loads(v))

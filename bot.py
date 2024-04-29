@@ -3,36 +3,41 @@ from poe_api_wrapper import AsyncPoeApi
 import logging
 
 class PoeBot:
-    token:str
+    bToken:str
 
-    bot:AsyncPoeApi
+    latToken:str
 
-    proxy:list[str]
+    bot:AsyncPoeApi|None
+
+    proxy:str
 
     model:str
 
-    def __init__(self,token:str,model:str="gpt3.5",proxy:list[str]=None) -> None:
-        self.token = token
-        self.bot == None
-        self.proxy=proxy
-        self.model=model
+    def __init__(self,bToken:str,latToken:str,model:str="capybara",proxy:str="") -> None:
+        self.bToken = bToken
+        self.latToken = latToken
+        self.bot = None
+        self.proxy = proxy
+        self.model = model
 
     async def createBot(self) -> None:
         if self.bot != None:
             return
 
-        autoProxy = self.proxy != None and len(self.proxy) != 0
-        bot = AsyncPoeApi({"p-b":self.token},self.proxy,autoProxy)
+        proxies=[]
+        if self.proxy != "":
+            proxies = [{"http":self.proxy,"https":self.proxy}]
+        bot = AsyncPoeApi({"b":self.bToken,"lat":self.latToken},proxies,False)
         await bot.create()
         self.bot = bot
-        logging.info("create bot success, token({}) proxy({})".format(self.token,self.proxy))
+        logging.info("create bot success, p-b({}) p-lat({}) proxy({})".format(self.bToken,self.latToken,self.proxy))
 
     async def Chat(self,msg:str) -> str:
-        self.createBot()
+        await self.createBot()
 
-        logging.info("asking question({})".format(msg))
-        response = self.bot.send_message(self.model,msg)
+        logging.info("asking bot({}) question({})".format(self.model,msg))
         answer = ""
-        async for chunk in response:
+        async for chunk in self.bot.send_message(self.model,msg):
+            logging.info("recv message({}) from bot".format(chunk["response"]))
             answer += chunk["response"]
         return answer
