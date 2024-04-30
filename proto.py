@@ -8,8 +8,14 @@ class Prompt:
         self.role = role
         self.content = content
 
+    def MarshalAsDict(self) -> dict:
+        map:dict = dict()
+        map['role'] = self.role
+        map['content'] = self.content
+        return map
+
     def Marshal(self) -> str:
-        return json.dumps(self)
+        return json.dumps(self.MarshalAsDict())
 
     @staticmethod
     def UnmarshalWithDict(map:dict) -> "Prompt":
@@ -26,9 +32,16 @@ class OpenAIRequest:
     def __init__(self,messages:list[Prompt]) -> None:
         self.messages = messages
 
-    def Marshal(self) -> str:
-        return json.dumps(self)
+    def MarshalAsDict(self) -> dict:
+        tab:list[dict] = list()
+        for i in self.messages:
+            tab.append(i.Marshal())
+        map:dict = dict()
+        map['messages'] = tab
+        return map
 
+    def Marshal(self) -> str:
+        return json.dumps(self.MarshalAsDict())
 
     @staticmethod
     def UnmarshalWithDict(map:dict) -> "OpenAIRequest":
@@ -47,20 +60,24 @@ class OpenAIRequest:
 class OpenAIChoice:
     index:int
 
-    messages:Prompt
+    message:Prompt
 
-    finish_reason:str
-
-    logprobs:object # Must be null
+    finishReason:str
 
     def __init__(self,index:int=0,message:Prompt=Prompt("",""),finishReason:str="stop") -> None:
         self.index = index
-        self.messages = message
-        self.finish_reason = finishReason
-        self.logprobs = None
+        self.message = message
+        self.finishReason = finishReason
+
+    def MarshalAsDict(self) -> dict:
+        map:dict = dict()
+        map['index'] = self.index
+        map['message'] = self.message.MarshalAsDict()
+        map['finish_reason'] = self.finishReason
+        return map
 
     def Marshal(self) -> str:
-        return json.dumps(self)
+        return json.dumps(self.MarshalAsDict())
 
 
     @staticmethod
@@ -83,8 +100,17 @@ class OpenAIResponse:
         self.choices.append(OpenAIChoice(message=message))
         return
 
+    def MarshalAsDict(self) -> dict:
+        tab:list[dict] = list()
+        for i in self.choices:
+            tab.append(i.MarshalAsDict())
+
+        map:dict = dict()
+        map['choices'] = tab
+        return map
+
     def Marshal(self) -> str:
-        return json.dumps(self)
+        return json.dumps(self.MarshalAsDict())
 
     @staticmethod
     def UnmarshalWithDict(map:dict) -> "OpenAIResponse":

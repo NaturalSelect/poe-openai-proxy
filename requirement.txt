@@ -1,3 +1,4 @@
 tornado
-poe_api_wrapper[async]
+poe-api-wrapper[async]
 nest_asyncio
+ballyregan

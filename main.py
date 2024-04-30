@@ -22,7 +22,7 @@ def ParseLogLevel(level:str)->int:
 
     return default
 
-def MakeApp(bToken:str,latToken:str,model:str="gpt3.5",proxy:str="")->tornado.web.Application:
+def MakeApp(bToken:str,latToken:str,model:str="capybara",proxy:str="")->tornado.web.Application:
     logging.warning("[MakeApp] Using token p-b({}) p-lat({})".format(bToken,latToken))
 
     app = tornado.web.Application([
