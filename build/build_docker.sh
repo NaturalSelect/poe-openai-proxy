@@ -2,7 +2,7 @@
 
 if [ -z "${POE_DEVCONTAINER_TAG}" ]
 then
-    POE_DEVCONTAINER_TAG="naturalselect/poe-openai-proxy"
+    POE_DEVCONTAINER_TAG="naturalselect/poe-proxy"
 fi
 
 if [ -z "${POE_VERSION}" ]
