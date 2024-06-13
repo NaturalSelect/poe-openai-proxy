@@ -6,10 +6,10 @@ phony := all
 all: build
 
 phony += build
-build: docker
+build: image
 
-phony += docker
-docker:
-	@build/build_docker.sh
+phony += image
+image:
+	@docker/build_image.sh
 
 .PHONY: $(phony)
