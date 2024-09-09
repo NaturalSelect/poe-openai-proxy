@@ -2,5 +2,5 @@
 
 if test -z ${TAG}
 then
-    TAG="v1.0.1"
+    TAG="v1.0.2"
 fi
