@@ -28,7 +28,7 @@ class PoeBot:
         proxies=[]
         if self.proxy != "":
             proxies = [{"http":self.proxy,"https":self.proxy}]
-        bot = AsyncPoeApi({"b":self.bToken,"lat":self.latToken},proxies,len(proxies) == 0)
+        bot = AsyncPoeApi({"p-b":self.bToken,"p-lat":self.latToken},proxies,len(proxies) == 0)
         logging.info("bot({}) creating".format(self.model))
         await bot.create()
         self.bot = bot
